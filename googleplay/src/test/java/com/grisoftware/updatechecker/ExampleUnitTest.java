@@ -1,4 +1,4 @@
-package com.grisoftware.updatechecker;
+package com.kotlinify.updatechecker;
 
 import org.junit.Test;
 

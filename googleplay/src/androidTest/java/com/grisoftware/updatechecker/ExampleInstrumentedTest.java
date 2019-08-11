@@ -1,4 +1,4 @@
-package com.grisoftware.updatechecker;
+package com.kotlinify.updatechecker;
 
 import android.content.Context;
 import androidx.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.grisoftware.updatechecker", appContext.getPackageName());
+        assertEquals("com.kotlinify.updatechecker", appContext.getPackageName());
     }
 }

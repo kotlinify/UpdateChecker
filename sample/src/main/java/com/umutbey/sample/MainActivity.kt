@@ -4,7 +4,7 @@ import android.os.Bundle
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.grisoftware.updatechecker.GoogleChecker
+import com.kotlinify.updatechecker.GoogleChecker
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -22,7 +22,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener { GoogleChecker("com.teknasyon.photofont", this@MainActivity, false, "en") }
+        fab.setOnClickListener {
+            GoogleChecker( activity = this@MainActivity,packageName = "com.teknasyon.photofont", haveNoButton = true, lang = "en")
+//            GoogleChecker( activity = this@MainActivity, haveNoButton = true, lang = "en")
+//            GoogleChecker( activity = this@MainActivity,packageName = "com.teknasyon.photofont", haveNoButton = true, lang = "en")
+//            GoogleChecker( activity = this@MainActivity)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
