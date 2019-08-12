@@ -19,6 +19,18 @@ import org.jsoup.Jsoup
 import java.io.IOException
 import java.util.*
 
+/**
+ * You can follow the application on google play with google checker class. You can show the popup
+ * or you can find out if there is a new version
+ *
+ * @constructor
+ *
+ * @param activity
+ * @param packageName If you wanna test or show another package update you enter like com.teknasyon.photolift
+ * @param haveNoButton default value is false
+ * @param lang default vaule is en
+ * @param showPopup if you dont wanna show popup you must send false, default value is true
+ */
 class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButton: Boolean? = false, lang: String? = "en", showPopup:Boolean = true) {
 
     private val PLAY_STORE_ROOT_WEB = "https://play.google.com/store/apps/details?id="
@@ -30,7 +42,13 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
     private var html: String? = null
 
 
+    /**
+     * Check whether there is new version
+     *
+     * @return [Boolean]
+     */
     fun isThereANewVersion():Boolean = isThereNewVersion
+
     private fun isOnline(): Boolean {
         val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
