@@ -31,7 +31,7 @@ import java.util.*
  * @param lang default vaule is en
  * @param showPopup if you dont wanna show popup you must send false, default value is true
  */
-class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButton: Boolean? = false, lang: String? = "en", showPopup:Boolean = true) {
+class GoogleChecker(private val activity: Activity, private val packageName: String? = null, private val haveNoButton: Boolean? = false, private val lang: String? = "en", private val showPopup: Boolean = true, callBack: ((Boolean) -> Unit)? = null) {
 
     private val PLAY_STORE_ROOT_WEB = "https://play.google.com/store/apps/details?id="
     private var isThereNewVersion: Boolean = false
@@ -41,13 +41,6 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
     private var context: Context? = activity
     private var html: String? = null
 
-
-    /**
-     * Check whether there is new version
-     *
-     * @return [Boolean]
-     */
-    fun isThereANewVersion():Boolean = isThereNewVersion
 
     private fun isOnline(): Boolean {
         val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -64,12 +57,16 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
     }
 
     init {
-        appPackageName = packageName ?: activity.baseContext.packageName
-        val url = "$PLAY_STORE_ROOT_WEB$packageName&hl=$lang"
-        control(activity, url, haveNoButton, lang)
+        init(packageName, activity, lang, haveNoButton, showPopup, callBack)
     }
 
-    private fun control(activity: Activity, url: String, haveNoButton: Boolean?, lang: String? = null, showPopup:Boolean = true) {
+    private fun init(packageName: String?, activity: Activity, lang: String?, haveNoButton: Boolean?, showPopup: Boolean, callBack: ((Boolean) -> Unit)? = null) {
+        appPackageName = packageName ?: activity.baseContext.packageName
+        val url = "$PLAY_STORE_ROOT_WEB$packageName&hl=$lang"
+        control(activity, url, haveNoButton, lang, showPopup, callBack)
+    }
+
+    private fun control(activity: Activity, url: String, haveNoButton: Boolean?, lang: String? = null, showPopup: Boolean = true, callBack: ((Boolean) -> Unit)? = null) {
         lang?.let {
             val locale = Locale(lang)
             Locale.setDefault(locale)
@@ -109,12 +106,12 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
                     pInfo = activity.packageManager.getPackageInfo(activity
                             .packageName, 0)
                     version = pInfo!!.versionName.toString()
-                    if (version.split(".".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size == marketVersion!!.split(".".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray().size) {
-                        newversion = Integer.valueOf(version.replace("[^\\d]".toRegex(), "") ?: "0")
+                    if (version.split(".".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size == marketVersion!!.split(".".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size) {
+                        newversion = Integer.valueOf(version.replace("[^\\d]".toRegex(), ""))
                         newMarketVersion = Integer.valueOf(marketVersion!!.replace("[^\\d]".toRegex(), ""))
                     } else {
                         var sameOldVersion = StringBuilder()
-                        val mv = marketVersion!!.split(".".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+                        val mv = marketVersion!!.split(".".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                         for (v in mv) {
                             sameOldVersion.append("$v.")
                         }
@@ -129,7 +126,10 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
                 if (newversion!! < newMarketVersion!! || lastIsBigger[0] && newversion === newMarketVersion) {
                     isThereNewVersion = true
                 }
-                if(showPopup){
+                activity.runOnUiThread {
+                    callBack?.let { it(isThereNewVersion) }
+                }
+                if (showPopup) {
                     var title: Spanned? = null
                     val translateTitle = activity.getString(R.string.update_available_title)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -158,7 +158,11 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
                                             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_HISTORY)
                                             activity.startActivity(i)
                                         }
-                                        activity.finish()
+                                        if (callBack != null) {
+                                            callBack(isThereNewVersion)
+                                        } else {
+                                            activity.finish()
+                                        }
                                     }
                             if (haveNoButton == true) {
                                 successDialog.setNegativeButtonText(activity.getString(R.string.cancel))
@@ -171,8 +175,13 @@ class GoogleChecker(activity: Activity, packageName: String? = null, haveNoButto
                             successDialog.show()
                         }
                     }
+                } else {
+                    activity.runOnUiThread {
+                        callBack?.let { it }
+                    }
                 }
             }).start()
+
         } else {
             Log.e("UpdateChecker", "No internet connection")
         }

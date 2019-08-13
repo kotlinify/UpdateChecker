@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import android.view.View
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +21,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        GoogleChecker(activity = this@MainActivity,packageName = "com.teknasyon.photofont", lang = "en", showPopup = false){
+            Toast.makeText(this@MainActivity, "Is There a New Version: $it", Toast.LENGTH_SHORT).show()
+
+        }
+
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
