@@ -23,13 +23,16 @@ import java.util.*
  * You can follow the application on google play with google checker class. You can show the popup
  * or you can find out if there is a new version
  *
+ * @author Umut ADALI
+ *
+ * @property activity
+ * @property packageName If you wanna test or show another package update you enter like com.teknasyon.photolift
+ * @property haveNoButton default value is false. If you want to show cancel button set true
+ * @property lang default value is en
+ * @property showPopup if you dont wanna show popup you must send false, default value is true
  * @constructor
  *
- * @param activity
- * @param packageName If you wanna test or show another package update you enter like com.teknasyon.photolift
- * @param haveNoButton default value is false
- * @param lang default vaule is en
- * @param showPopup if you dont wanna show popup you must send false, default value is true
+ * @param callBack will show whether the new version
  */
 class GoogleChecker(private val activity: Activity, private val packageName: String? = null, private val haveNoButton: Boolean? = false, private val lang: String? = "en", private val showPopup: Boolean = true, callBack: ((Boolean) -> Unit)? = null) {
 
