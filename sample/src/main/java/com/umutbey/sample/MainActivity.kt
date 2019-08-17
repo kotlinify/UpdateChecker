@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         GoogleChecker(activity = this@MainActivity,packageName = "com.teknasyon.photofont", lang = "en", showPopup = false){
             Toast.makeText(this@MainActivity, "Is There a New Version: $it", Toast.LENGTH_SHORT).show()
-
         }
 
 
